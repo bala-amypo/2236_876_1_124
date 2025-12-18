@@ -1,41 +1,24 @@
 package com.example.demo.config;
 
-import com.example.demo.security.*;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.*;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
-    public JwtUtil jwtUtil() {
-        return new JwtUtil(
-                "my-secret-key-my-secret-key".getBytes(),
-                3600000L
-        );
-    }
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter(
-            JwtUtil jwtUtil,
-            CustomUserDetailsService userDetailsService) {
-        return new JwtAuthenticationFilter(jwtUtil, userDetailsService);
-    }
-
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http,
-                                           JwtAuthenticationFilter jwtFilter)
-            throws Exception {
-
-        http.csrf().disable()
-            .authorizeHttpRequests()
-            .requestMatchers("/auth/**", "/simple-status", "/swagger-ui/**", "/v3/api-docs/**")
-            .permitAll()
-            .anyRequest().authenticated()
-            .and()
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        http
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/auth/**", "/simple-status").permitAll()
+                .anyRequest().authenticated()
+            );
 
         return http.build();
     }
