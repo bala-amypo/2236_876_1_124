@@ -1,14 +1,5 @@
-package com.example.demo.entity;
-
-import jakarta.persistence.*;
-
 @Entity
-@Table(
-        name = "user_accounts",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = "email")
-        }
-)
+@Table(name = "users")
 public class UserAccount {
 
     @Id
@@ -16,7 +7,7 @@ public class UserAccount {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private String fullName;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -24,61 +15,21 @@ public class UserAccount {
     @Column(nullable = false)
     private String password;
 
-    private Boolean active;
+    private String role;
 
-    // ✅ Required no-arg constructor
-    public UserAccount() {
-    }
-
-    public UserAccount(String name, String email, String password) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-    }
+    private LocalDateTime createdAt;
 
     @PrePersist
-    @PreUpdate
-    public void preSave() {
-        if (this.active == null) {
-            this.active = true;
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+        if (this.role == null) {
+            this.role = "USER";
         }
     }
 
-    // ---------- GETTERS & SETTERS ----------
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Boolean getActive() {
-        return active;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    // ✅ REQUIRED getters/setters
+    public String getEmail() { return email; }
+    public String getPassword() { return password; }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 }
