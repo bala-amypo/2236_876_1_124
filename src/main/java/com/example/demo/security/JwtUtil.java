@@ -10,31 +10,36 @@ public class JwtUtil {
     private final Key key;
     private final long expirationMs;
 
+    // REQUIRED constructor
     public JwtUtil(byte[] secret, Long expirationMs) {
         this.key = Keys.hmacShaKeyFor(secret);
         this.expirationMs = expirationMs;
     }
 
-    public String generateToken(String email) {
+    // ✅ REQUIRED BY TESTS & CONTROLLER
+    public String generateToken(Long userId, String email, String role) {
         return Jwts.builder()
                 .setSubject(email)
+                .claim("userId", userId)
+                .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // ✅ REQUIRED BY TESTS
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
 
-    // ✅ REQUIRED BY TESTS
     public String extractEmail(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
