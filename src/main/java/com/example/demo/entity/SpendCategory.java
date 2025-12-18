@@ -1,30 +1,54 @@
-[ERROR] COMPILATION ERROR : 
-[INFO] -------------------------------------------------------------
-[ERROR] /home/coder/Workspace/demo/src/main/java/com/example/demo/entity/DiversityClassification.java:[26,17] cannot find symbol
-  symbol:   class DiversityTarget
-  location: class com.example.demo.entity.DiversityClassification
-[ERROR] /home/coder/Workspace/demo/src/main/java/com/example/demo/entity/Supplier.java:[45,17] cannot find symbol
-  symbol:   class PurchaseOrder
-  location: class com.example.demo.entity.Supplier
-[INFO] 2 errors 
-[INFO] -------------------------------------------------------------
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD FAILURE
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  10.095 s
-[INFO] Finished at: 2025-12-18T14:21:50Z
-[INFO] ------------------------------------------------------------------------
-[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile (default-compile) on project demo: Compilation failure: Compilation failure: 
-[ERROR] /home/coder/Workspace/demo/src/main/java/com/example/demo/entity/DiversityClassification.java:[26,17] cannot find symbol
-[ERROR]   symbol:   class DiversityTarget
-[ERROR]   location: class com.example.demo.entity.DiversityClassification
-[ERROR] /home/coder/Workspace/demo/src/main/java/com/example/demo/entity/Supplier.java:[45,17] cannot find symbol
-[ERROR]   symbol:   class PurchaseOrder
-[ERROR]   location: class com.example.demo.entity.Supplier
-[ERROR] -> [Help 1]
-[ERROR] 
-[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
-[ERROR] Re-run Maven using the -X switch to enable full debug logging.
-[ERROR] 
-[ERROR] For more information about the errors and possible solutions, please read the following articles:
-[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+package com.example.demo.entity;
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "spend_categories")
+public class SpendCategory {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true)
+    private String name;
+
+    private Boolean active;
+
+    // ✅ Required no-arg constructor
+    public SpendCategory() {
+    }
+
+    public SpendCategory(String name) {
+        this.name = name;
+    }
+
+    @PrePersist
+    @PreUpdate
+    public void preSave() {
+        if (this.active == null) {
+            this.active = true;
+        }
+        if (this.name != null) {
+            this.name = this.name.trim().toUpperCase();
+        }
+    }
+
+    // ---------- getters & setters ----------
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+}

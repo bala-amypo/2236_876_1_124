@@ -38,5 +38,5 @@ public class DiversityTarget {
             this.active = true;
         }
     }
+}
 
-    // --
