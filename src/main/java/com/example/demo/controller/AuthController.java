@@ -26,7 +26,7 @@ public class AuthController {
     public UserAccount register(@RequestBody RegisterRequest request) {
 
         UserAccount user = new UserAccount();
-        user.setName(request.fullName);
+        user.setFullName(request.fullName);
         user.setEmail(request.email);
         user.setPassword(request.password);
         user.setRole(request.role); // defaults handled in entity
