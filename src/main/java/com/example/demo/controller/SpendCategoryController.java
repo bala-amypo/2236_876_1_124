@@ -2,41 +2,48 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.SpendCategory;
 import com.example.demo.service.SpendCategoryService;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/categories")
+@RequestMapping("/api/categories")
+@Tag(name = "Spend Category API")
 public class SpendCategoryController {
 
-    @Autowired
-    private SpendCategoryService service;
+    private final SpendCategoryService service;
+
+    public SpendCategoryController(SpendCategoryService service) {
+        this.service = service;
+    }
 
     @PostMapping
-    public SpendCategory create(@RequestBody SpendCategory category) {
-        return service.createCategory(category);
+    public ResponseEntity<SpendCategory> create(@RequestBody SpendCategory category) {
+        return ResponseEntity.ok(service.createCategory(category));
     }
 
     @PutMapping("/{id}")
-    public SpendCategory update(@PathVariable Long id,
-                                @RequestBody SpendCategory category) {
-        return service.updateCategory(id, category);
+    public ResponseEntity<SpendCategory> update(
+            @PathVariable Long id,
+            @RequestBody SpendCategory category) {
+        return ResponseEntity.ok(service.updateCategory(id, category));
     }
 
     @GetMapping("/{id}")
-    public SpendCategory getById(@PathVariable Long id) {
-        return service.getCategoryById(id);
+    public ResponseEntity<SpendCategory> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getCategoryById(id));
     }
 
     @GetMapping
-    public List<SpendCategory> getAll() {
-        return service.getAllCategories();
+    public ResponseEntity<List<SpendCategory>> getAll() {
+        return ResponseEntity.ok(service.getAllCategories());
     }
 
-    @DeleteMapping("/{id}")
-    public void deactivate(@PathVariable Long id) {
+    @PutMapping("/{id}/deactivate")
+    public ResponseEntity<Void> deactivate(@PathVariable Long id) {
         service.deactivateCategory(id);
+        return ResponseEntity.noContent().build();
     }
 }
