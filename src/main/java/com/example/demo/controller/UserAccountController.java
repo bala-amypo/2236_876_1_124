@@ -14,14 +14,15 @@ public class UserAccountController {
         this.service = service;
     }
 
+    // REGISTER USER
     @PostMapping("/register")
     public UserAccount register(@RequestBody UserAccount user) {
-        return service.register(user);
+        return service.save(user); // ✅ FIX
     }
 
-    @PostMapping("/login")
-    public UserAccount login(@RequestParam String email,
-                             @RequestParam String password) {
-        return service.login(email, password);
+    // SIMPLE FETCH (OPTIONAL)
+    @GetMapping("/by-email")
+    public UserAccount getByEmail(@RequestParam String email) {
+        return service.findByEmail(email); // ✅ FIX
     }
 }
