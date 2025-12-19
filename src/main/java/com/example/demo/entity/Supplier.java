@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(name = "suppliers")
 public class Supplier {
 
     @Id
@@ -22,14 +23,25 @@ public class Supplier {
     @ManyToMany
     private Set<DiversityClassification> diversityClassifications = new HashSet<>();
 
+    public Supplier() {}
+
     @PrePersist
     public void prePersist() {
         if (isActive == null) isActive = true;
-        createdAt = LocalDateTime.now();
+        if (createdAt == null) createdAt = LocalDateTime.now();
     }
 
+    // getters & setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
+    public Boolean getIsActive() { return isActive; }
+    public void setIsActive(Boolean active) { isActive = active; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
@@ -39,13 +51,6 @@ public class Supplier {
 
     public String getRegistrationNumber() { return registrationNumber; }
     public void setRegistrationNumber(String registrationNumber) { this.registrationNumber = registrationNumber; }
-
-    public Boolean getIsActive() { return isActive; }
-    public void setIsActive(Boolean active) { isActive = active; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 
     public Set<DiversityClassification> getDiversityClassifications() {
         return diversityClassifications;
