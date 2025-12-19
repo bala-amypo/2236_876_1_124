@@ -4,7 +4,11 @@ import com.example.demo.entity.UserAccount;
 
 public interface UserAccountService {
 
-    UserAccount save(UserAccount user);
+    UserAccount register(UserAccount user);
 
-    UserAccount findByEmail(String email);   // ✅ ADD THIS
+    UserAccount findByEmailOrThrow(String email);
+
+    boolean existsByEmail(String email);
+
+    UserAccount findByEmail(String email);
 }
