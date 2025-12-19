@@ -6,7 +6,8 @@ import com.example.demo.repository.DiversityClassificationRepository;
 import com.example.demo.service.DiversityClassificationService;
 import java.util.List;
 
-public class DiversityClassificationServiceImpl implements DiversityClassificationService {
+public class DiversityClassificationServiceImpl
+        implements DiversityClassificationService {
 
     private final DiversityClassificationRepository repo;
 
@@ -14,14 +15,12 @@ public class DiversityClassificationServiceImpl implements DiversityClassificati
         this.repo = repo;
     }
 
-    public DiversityClassification create(DiversityClassification dc) {
-        return repo.save(dc);
-    }
-
+    @Override
     public List<DiversityClassification> getAll() {
         return repo.findAll();
     }
 
+    @Override
     public void deactivateClassification(Long id) {
         DiversityClassification dc = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Not found"));

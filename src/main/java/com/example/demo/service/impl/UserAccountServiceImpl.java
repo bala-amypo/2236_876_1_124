@@ -9,26 +9,29 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class UserAccountServiceImpl implements UserAccountService {
 
-    private final UserAccountRepository repository;
+    private final UserAccountRepository repo;
     private final PasswordEncoder encoder;
 
-    public UserAccountServiceImpl(UserAccountRepository repository, PasswordEncoder encoder) {
-        this.repository = repository;
+    public UserAccountServiceImpl(UserAccountRepository repo,
+                                  PasswordEncoder encoder) {
+        this.repo = repo;
         this.encoder = encoder;
     }
 
     @Override
     public UserAccount register(UserAccount user) {
-        if (repository.existsByEmail(user.getEmail())) {
-            throw new BadRequestException("Email already exists");
+
+        if (repo.existsByEmail(user.getEmail())) {
+            throw new BadRequestException("Email exists");
         }
+
         user.setPassword(encoder.encode(user.getPassword()));
-        return repository.save(user);
+        return repo.save(user);
     }
 
     @Override
     public UserAccount findByEmailOrThrow(String email) {
-        return repository.findByEmail(email)
+        return repo.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 }

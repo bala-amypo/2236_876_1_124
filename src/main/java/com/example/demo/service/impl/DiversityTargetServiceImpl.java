@@ -1,7 +1,6 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.DiversityTarget;
-import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.DiversityTargetRepository;
 import com.example.demo.service.DiversityTargetService;
@@ -9,35 +8,32 @@ import java.util.List;
 
 public class DiversityTargetServiceImpl implements DiversityTargetService {
 
-    private final DiversityTargetRepository repository;
+    private final DiversityTargetRepository repo;
 
-    public DiversityTargetServiceImpl(DiversityTargetRepository repository) {
-        this.repository = repository;
+    public DiversityTargetServiceImpl(DiversityTargetRepository repo) {
+        this.repo = repo;
     }
 
     @Override
     public DiversityTarget createTarget(DiversityTarget target) {
-        if (target.getTargetPercentage() < 0 || target.getTargetPercentage() > 100) {
-            throw new BadRequestException("Percentage must be between 0 and 100");
-        }
-        return repository.save(target);
+        return repo.save(target);
     }
 
     @Override
     public List<DiversityTarget> getTargetsByYear(int year) {
-        return repository.findByTargetYear(year);
+        return repo.findByTargetYear(year);
     }
 
     @Override
     public List<DiversityTarget> getAllTargets() {
-        return repository.findAll();
+        return repo.findAll();
     }
 
     @Override
     public void deactivateTarget(Long id) {
-        DiversityTarget t = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Target not found"));
+        DiversityTarget t = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
         t.setActive(false);
-        repository.save(t);
+        repo.save(t);
     }
 }

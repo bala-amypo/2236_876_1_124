@@ -4,40 +4,26 @@ import com.example.demo.entity.SpendCategory;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.SpendCategoryRepository;
 import com.example.demo.service.SpendCategoryService;
-
 import java.util.List;
 
-public class SpendCategoryServiceImpl
-        implements SpendCategoryService {
+public class SpendCategoryServiceImpl implements SpendCategoryService {
 
-    private final SpendCategoryRepository repository;
+    private final SpendCategoryRepository repo;
 
-    public SpendCategoryServiceImpl(
-            SpendCategoryRepository repository) {
-        this.repository = repository;
+    public SpendCategoryServiceImpl(SpendCategoryRepository repo) {
+        this.repo = repo;
     }
 
     @Override
-    public SpendCategory create(SpendCategory category) {
-        return repository.save(category);
+    public List<SpendCategory> getAllCategories() {
+        return repo.findAll();
     }
 
     @Override
-    public SpendCategory getById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Category not found"));
-    }
-
-    @Override
-    public List<SpendCategory> getActiveCategories() {
-        return repository.findByIsActiveTrue();
-    }
-
-    @Override
-    public void deactivate(Long id) {
-        SpendCategory category = getById(id);
-        category.setIsActive(false);
-        repository.save(category);
+    public void deactivateCategory(Long id) {
+        SpendCategory sc = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+        sc.setActive(false);
+        repo.save(sc);
     }
 }
