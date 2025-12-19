@@ -10,46 +10,67 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    // 256-bit secret (SAFE)
-    private static final String SECRET =
-            "THIS_IS_A_VERY_LONG_AND_SECURE_SECRET_KEY_256_BITS_MIN";
+    private final Key secretKey;
+    private final long expirationMillis;
 
-    private final Key key;
-
-    public JwtUtil() {
-        this.key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    // Constructor injection for secret and expiration
+    public JwtUtil(String secret, long expirationMillis) {
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+        this.expirationMillis = expirationMillis;
     }
 
-    // ✅ REQUIRED by AuthController & tests
-    public String generateToken(String email) {
+    // Generate token with userId, email, role claims
+    public String generateToken(Long userId, String email, String role) {
         return Jwts.builder()
-                .setSubject(email)
+                .claim("userId", userId)
+                .claim("email", email)
+                .claim("role", role)
                 .setIssuedAt(new Date())
-                .setExpiration(
-                        new Date(System.currentTimeMillis() + 86400000) // 1 day
-                )
-                .signWith(key, SignatureAlgorithm.HS256)
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMillis))
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
+    // Extract email claim
     public String extractEmail(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        return extractClaim(token, claims -> claims.get("email", String.class));
     }
 
+    // Extract role claim
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
+    }
+
+    // Extract userId claim
+    public Long extractUserId(String token) {
+        return extractClaim(token, claims -> claims.get("userId", Long.class));
+    }
+
+    // Validate token (returns true if valid)
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
-                    .setSigningKey(key)
+                    .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token);
             return true;
-        } catch (JwtException e) {
+        } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
+    }
+
+    // Generic method to extract any claim
+    public <T> T extractClaim(String token, java.util.function.Function<Claims, T> claimsResolver) {
+        Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
+    // Extract all claims from token
+    private Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 }
