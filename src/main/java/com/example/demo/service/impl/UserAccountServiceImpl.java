@@ -1,26 +1,55 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.UserAccount;
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.service.UserAccountService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserAccountServiceImpl implements UserAccountService {
 
-    private final UserAccountRepository repository;
+    private final UserAccountRepository userAccountRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserAccountServiceImpl(UserAccountRepository repository) {
-        this.repository = repository;
+    public UserAccountServiceImpl(UserAccountRepository userAccountRepository,
+                                  PasswordEncoder passwordEncoder) {
+        this.userAccountRepository = userAccountRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public UserAccount save(UserAccount user) {
-        return repository.save(user);
+    public UserAccount register(UserAccount user) {
+        if (userAccountRepository.existsByEmail(user.getEmail())) {
+            throw new BadRequestException("Email already in use");
+        }
+
+        // Default role
+        if (user.getRole() == null) {
+            user.setRole("USER");
+        }
+
+        // Encode password
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        return userAccountRepository.save(user);
+    }
+
+    @Override
+    public UserAccount findByEmailOrThrow(String email) {
+        return userAccountRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userAccountRepository.existsByEmail(email);
     }
 
     @Override
     public UserAccount findByEmail(String email) {
-        return repository.findByEmail(email).orElse(null);
+        return userAccountRepository.findByEmail(email).orElse(null);
     }
 }
