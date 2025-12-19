@@ -28,7 +28,7 @@ public class Supplier {
     private String registrationNumber;
 
     @Column(nullable = false)
-    private Boolean active;
+    private Boolean isActive;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -44,19 +44,11 @@ public class Supplier {
     @OneToMany(mappedBy = "supplier")
     private Set<PurchaseOrder> purchaseOrders = new HashSet<>();
 
-    // ✅ REQUIRED no-arg constructor
-    public Supplier() {}
-
-    // ✅ REQUIRED by tests
-    public Supplier(String name, String email, String registrationNumber) {
-        this.name = name;
-        this.email = email;
-        this.registrationNumber = registrationNumber;
+    // ✅ REQUIRED by JPA
+    public Supplier() {
     }
 
-    // ✅ OFTEN REQUIRED by tests
-    public Supplier(Long id, String name, String email, String registrationNumber) {
-        this.id = id;
+    public Supplier(String name, String email, String registrationNumber) {
         this.name = name;
         this.email = email;
         this.registrationNumber = registrationNumber;
@@ -64,58 +56,53 @@ public class Supplier {
 
     @PrePersist
     public void prePersist() {
-        if (active == null) active = true;
-        if (createdAt == null) createdAt = LocalDateTime.now();
+        if (this.isActive == null) {
+            this.isActive = true;
+        }
+        this.createdAt = LocalDateTime.now();
     }
 
     @PreUpdate
     public void preUpdate() {
-        updatedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
-    // ---------- getters & setters (ALL REQUIRED) ----------
+    // ===== GETTERS / SETTERS =====
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
-    public String getRegistrationNumber() { return registrationNumber; }
-    public void setRegistrationNumber(String registrationNumber) {
-        this.registrationNumber = registrationNumber;
+    public Long getId() {
+        return id;
     }
 
-    public Boolean getActive() { return active; }
-    public void setActive(Boolean active) { this.active = active; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public String getName() {
+        return name;
     }
 
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public String getEmail() {
+        return email;
+    }
+
+    public String getRegistrationNumber() {
+        return registrationNumber;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    // ✅ REQUIRED (primitive boolean)
+    public void setIsActive(boolean active) {
+        this.isActive = active;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
     public Set<DiversityClassification> getDiversityClassifications() {
         return diversityClassifications;
-    }
-
-    public void setDiversityClassifications(
-            Set<DiversityClassification> diversityClassifications) {
-        this.diversityClassifications = diversityClassifications;
-    }
-
-    public Set<PurchaseOrder> getPurchaseOrders() {
-        return purchaseOrders;
-    }
-
-    public void setPurchaseOrders(Set<PurchaseOrder> purchaseOrders) {
-        this.purchaseOrders = purchaseOrders;
     }
 }
