@@ -7,32 +7,33 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/spend-categories")
+@RequestMapping("/categories")
 public class SpendCategoryController {
 
-    private final SpendCategoryService service;
+    private final SpendCategoryService categoryService;
 
-    public SpendCategoryController(SpendCategoryService service) {
-        this.service = service;
+    public SpendCategoryController(SpendCategoryService categoryService) {
+        this.categoryService = categoryService;
     }
 
     @PostMapping
-    public SpendCategory create(@RequestBody SpendCategory category) {
-        return service.create(category);
+    public SpendCategory createCategory(@RequestBody SpendCategory category) {
+        return categoryService.createCategory(category);
     }
 
     @GetMapping("/{id}")
-    public SpendCategory get(@PathVariable Long id) {
-        return service.getById(id);
+    public SpendCategory getCategory(@PathVariable Long id) {
+        return categoryService.getCategoryById(id);
     }
 
     @GetMapping
-    public List<SpendCategory> listActive() {
-        return service.getActiveCategories();
+    public List<SpendCategory> getAllCategories() {
+        return categoryService.getAllCategories();
     }
 
     @PutMapping("/{id}/deactivate")
-    public void deactivate(@PathVariable Long id) {
-        service.deactivate(id);
+    public SpendCategory deactivateCategory(@PathVariable Long id) {
+        categoryService.deactivateCategory(id);
+        return categoryService.getCategoryById(id);
     }
 }
