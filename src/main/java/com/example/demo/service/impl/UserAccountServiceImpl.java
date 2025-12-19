@@ -19,4 +19,16 @@ public class UserAccountServiceImpl implements UserAccountService {
 
     @Override
     public UserAccount register(UserAccount user) {
-        if (repository.exists
+        if (repository.existsByEmail(user.getEmail())) {
+            throw new BadRequestException("Email already exists");
+        }
+        user.setPassword(encoder.encode(user.getPassword()));
+        return repository.save(user);
+    }
+
+    @Override
+    public UserAccount findByEmailOrThrow(String email) {
+        return repository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+}
