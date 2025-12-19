@@ -4,40 +4,28 @@ import com.example.demo.entity.DiversityClassification;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.DiversityClassificationRepository;
 import com.example.demo.service.DiversityClassificationService;
-
 import java.util.List;
 
-public class DiversityClassificationServiceImpl
-        implements DiversityClassificationService {
+public class DiversityClassificationServiceImpl implements DiversityClassificationService {
 
-    private final DiversityClassificationRepository repository;
+    private final DiversityClassificationRepository repo;
 
-    public DiversityClassificationServiceImpl(
-            DiversityClassificationRepository repository) {
-        this.repository = repository;
+    public DiversityClassificationServiceImpl(DiversityClassificationRepository repo) {
+        this.repo = repo;
     }
 
-    @Override
-    public DiversityClassification create(DiversityClassification classification) {
-        return repository.save(classification);
+    public DiversityClassification create(DiversityClassification dc) {
+        return repo.save(dc);
     }
 
-    @Override
-    public DiversityClassification getById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Classification not found"));
+    public List<DiversityClassification> getAll() {
+        return repo.findAll();
     }
 
-    @Override
-    public List<DiversityClassification> getAllActive() {
-        return repository.findByIsActiveTrue();
-    }
-
-    @Override
-    public void deactivate(Long id) {
-        DiversityClassification classification = getById(id);
-        classification.setIsActive(false);
-        repository.save(classification);
+    public void deactivateClassification(Long id) {
+        DiversityClassification dc = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+        dc.setActive(false);
+        repo.save(dc);
     }
 }
