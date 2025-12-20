@@ -20,15 +20,12 @@ public class SpendCategoryServiceImpl implements SpendCategoryService {
 
     @Override
     public SpendCategory create(SpendCategory category) {
-
         if (repository.existsByCode(category.getCode())) {
             throw new BadRequestException("Spend category code already exists");
         }
-
         if (repository.existsByName(category.getName())) {
             throw new BadRequestException("Spend category name already exists");
         }
-
         category.setActive(true);
         return repository.save(category);
     }
@@ -41,13 +38,18 @@ public class SpendCategoryServiceImpl implements SpendCategoryService {
 
     @Override
     public List<SpendCategory> getAllActive() {
-        return repository.findAllByActiveTrue();
+        return repository.findByActiveTrue();
     }
 
     @Override
-    public SpendCategory deactivate(Long id) {
+    public SpendCategory deactivateCategory(Long id) {
         SpendCategory category = getActiveById(id);
         category.setActive(false);
         return repository.save(category);
+    }
+
+    @Override
+    public List<SpendCategory> getAllCategories() {
+        return repository.findAll();
     }
 }

@@ -28,12 +28,12 @@ public class SpendCategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<SpendCategory>> getAll() {
+    public ResponseEntity<List<SpendCategory>> getAllActive() {
         return ResponseEntity.ok(service.getAllActive());
     }
 
-    @DeleteMapping("/{id}")
+    @PatchMapping("/deactivate/{id}")
     public ResponseEntity<SpendCategory> deactivate(@PathVariable Long id) {
-        return ResponseEntity.ok(service.deactivate(id));
+        return ResponseEntity.ok(service.deactivateCategory(id));
     }
 }
