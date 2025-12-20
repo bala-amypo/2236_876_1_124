@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/spend-categories")
+@RequestMapping("/api/categories")
 public class SpendCategoryController {
 
     private final SpendCategoryService service;
@@ -23,16 +23,16 @@ public class SpendCategoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SpendCategory> getById(@PathVariable Long id) {
+    public ResponseEntity<SpendCategory> getActive(@PathVariable Long id) {
         return ResponseEntity.ok(service.getActiveById(id));
     }
 
     @GetMapping
-    public ResponseEntity<List<SpendCategory>> getAllActive() {
+    public ResponseEntity<List<SpendCategory>> getAll() {
         return ResponseEntity.ok(service.getAllActive());
     }
 
-    @PatchMapping("/deactivate/{id}")
+    @PutMapping("/deactivate/{id}")
     public ResponseEntity<SpendCategory> deactivate(@PathVariable Long id) {
         return ResponseEntity.ok(service.deactivateCategory(id));
     }
