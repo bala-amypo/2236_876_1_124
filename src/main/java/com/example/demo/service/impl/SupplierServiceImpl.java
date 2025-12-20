@@ -6,7 +6,6 @@ import com.example.demo.repository.SupplierRepository;
 import com.example.demo.service.SupplierService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -24,6 +23,25 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
+    public Supplier updateSupplier(Long id, Supplier supplier) {
+        Supplier existing = supplierRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Supplier not found with id: " + id));
+
+        existing.setName(supplier.getName());
+        existing.setEmail(supplier.getEmail());
+        existing.setDiversityClassifications(supplier.getDiversityClassifications());
+
+        return supplierRepository.save(existing);
+    }
+
+    @Override
+    public void deleteSupplier(Long id) {
+        Supplier existing = supplierRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Supplier not found with id: " + id));
+        supplierRepository.delete(existing);
+    }
+
+    @Override
     public Supplier getSupplierById(Long id) {
         return supplierRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Supplier not found with id: " + id));
@@ -32,13 +50,5 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     public List<Supplier> getAllSuppliers() {
         return supplierRepository.findAll();
-    }
-
-    @Override
-    public void deactivateSupplier(Long id) {
-        Supplier supplier = getSupplierById(id);
-        supplier.setIsActive(false);
-        supplier.setUpdatedAt(LocalDateTime.now());
-        supplierRepository.save(supplier);
     }
 }
