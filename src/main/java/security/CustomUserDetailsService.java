@@ -21,18 +21,14 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email)
-            throws UsernameNotFoundException {
-
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserAccount user = userAccountRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException("User not found with email: " + email)
-                );
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
 
         return new User(
-                user.getEmail(),      // ✅ matches repository & entity
+                user.getEmail(),
                 user.getPassword(),
-                List.of(new SimpleGrantedAuthority("ROLE_USER"))
+                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
         );
     }
 }
