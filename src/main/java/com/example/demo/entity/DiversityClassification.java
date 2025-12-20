@@ -18,15 +18,12 @@ public class DiversityClassification {
     @ManyToMany(mappedBy = "diversityClassifications")
     private Set<Supplier> suppliers = new HashSet<>();
 
-    public DiversityClassification() {
-    }
+    public DiversityClassification() {}
 
-    public DiversityClassification(Long id, String name) {
-        this.id = id;
+    public DiversityClassification(String name) {
         this.name = name;
     }
 
-    // ---------------- Getters & Setters ----------------
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
