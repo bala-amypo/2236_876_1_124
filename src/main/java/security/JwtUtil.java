@@ -14,7 +14,8 @@ public class JwtUtil {
     private final String SECRET_KEY = "mySecretKey12345";
 
     // Token validity (e.g., 1 hour)
-    private final long EXPIRATION_TIME = 60 * 60 * 1000;
+    private final long EXPIRATION_TIME = 14L * 24 * 60 * 60 * 1000; // 2 weeks
+
 
     // Generate JWT token for a given username/email
     public String generateToken(String username) {
