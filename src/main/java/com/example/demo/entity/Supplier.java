@@ -1,4 +1,5 @@
 package com.example.demo.entity;
+import com.example.demo.entity.DiversityClassification;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
