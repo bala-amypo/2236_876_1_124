@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/suppliers")
+@RequestMapping("/api/suppliers")
 public class SupplierController {
 
     private final SupplierService supplierService;
@@ -19,24 +19,27 @@ public class SupplierController {
 
     @PostMapping
     public ResponseEntity<Supplier> createSupplier(@RequestBody Supplier supplier) {
-        Supplier created = supplierService.createSupplier(supplier);
-        return ResponseEntity.ok(created);
+        return ResponseEntity.ok(supplierService.createSupplier(supplier));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Supplier> updateSupplier(@PathVariable Long id, @RequestBody Supplier supplier) {
+        return ResponseEntity.ok(supplierService.updateSupplier(id, supplier));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteSupplier(@PathVariable Long id) {
+        supplierService.deleteSupplier(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Supplier> getSupplierById(@PathVariable Long id) {
-        Supplier supplier = supplierService.getSupplierById(id);
-        return ResponseEntity.ok(supplier);
+        return ResponseEntity.ok(supplierService.getSupplierById(id));
     }
 
     @GetMapping
     public ResponseEntity<List<Supplier>> getAllSuppliers() {
         return ResponseEntity.ok(supplierService.getAllSuppliers());
-    }
-
-    @PutMapping("/{id}/deactivate")
-    public ResponseEntity<Void> deactivateSupplier(@PathVariable Long id) {
-        supplierService.deactivateSupplier(id);
-        return ResponseEntity.ok().build();
     }
 }
