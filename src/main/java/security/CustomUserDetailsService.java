@@ -30,7 +30,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 );
 
         return new User(
-                user.getEmail(),          // ✅ email used as username
+                user.getEmail(),      // ✅ matches repository & entity
                 user.getPassword(),
                 List.of(new SimpleGrantedAuthority("ROLE_USER"))
         );
