@@ -1,7 +1,6 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.SpendCategory;
-
 import java.util.List;
 
 public interface SpendCategoryService {
@@ -12,5 +11,7 @@ public interface SpendCategoryService {
 
     List<SpendCategory> getAllActive();
 
-    SpendCategory deactivate(Long id);
+    SpendCategory deactivateCategory(Long id);
+
+    List<SpendCategory> getAllCategories(); // for test case 20
 }

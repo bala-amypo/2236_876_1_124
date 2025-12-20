@@ -2,7 +2,6 @@ package com.example.demo.repository;
 
 import com.example.demo.entity.SpendCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -12,7 +11,7 @@ public interface SpendCategoryRepository extends JpaRepository<SpendCategory, Lo
 
     boolean existsByName(String name);
 
-    Optional<SpendCategory> findByIdAndActiveTrue(Long id);
+    List<SpendCategory> findByActiveTrue();
 
-    List<SpendCategory> findAllByActiveTrue();
+    Optional<SpendCategory> findByIdAndActiveTrue(Long id);
 }
