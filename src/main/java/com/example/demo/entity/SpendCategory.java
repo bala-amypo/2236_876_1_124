@@ -1,31 +1,39 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(
-    name = "spend_categories",
-    uniqueConstraints = {
-        @UniqueConstraint(columnNames = "code"),
-        @UniqueConstraint(columnNames = "name")
-    }
-)
+@Table(name = "spend_categories")
 public class SpendCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50)
-    private String code;
-
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, unique = true)
     private String name;
 
     @Column(nullable = false)
-    private boolean active = true;
+    private Boolean active;
 
-    public SpendCategory() {}
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    // -------------------- JPA LIFECYCLE --------------------
+
+    @PrePersist
+    public void prePersist() {
+        if (active == null) active = true;
+        createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
+    // -------------------- GETTERS & SETTERS --------------------
 
     public Long getId() {
         return id;
@@ -33,14 +41,6 @@ public class SpendCategory {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 
     public String getName() {
@@ -51,11 +51,23 @@ public class SpendCategory {
         this.name = name;
     }
 
-    public boolean isActive() {
+    public Boolean getActive() {
         return active;
     }
 
-    public void setActive(boolean active) {
+    public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
