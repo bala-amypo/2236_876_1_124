@@ -1,76 +1,57 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.JwtResponse;
 import com.example.demo.dto.LoginRequest;
 import com.example.demo.dto.RegisterRequest;
 import com.example.demo.entity.UserAccount;
-import com.example.demo.exception.UnauthorizedException;
-import com.example.demo.security.JwtUtil;
-import com.example.demo.service.UserAccountService;
+import com.example.demo.repository.UserAccountRepository;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthController {
 
-    private final UserAccountService userAccountService;
-    private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtUtil;
+    private final UserAccountRepository userAccountRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthController(UserAccountService userAccountService,
-                          AuthenticationManager authenticationManager,
-                          JwtUtil jwtUtil) {
-        this.userAccountService = userAccountService;
-        this.authenticationManager = authenticationManager;
-        this.jwtUtil = jwtUtil;
+    public AuthController(UserAccountRepository userAccountRepository,
+                          PasswordEncoder passwordEncoder) {
+        this.userAccountRepository = userAccountRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
+    // ✅ REGISTER
     @PostMapping("/register")
-    public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+
+        if (userAccountRepository.existsByEmail(request.getEmail())) {
+            return ResponseEntity.badRequest().body("Email already registered");
+        }
 
         UserAccount user = new UserAccount();
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
-        user.setRole(request.getRole());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole("USER");
 
-        UserAccount saved = userAccountService.register(user);
+        userAccountRepository.save(user);
 
-        String token = jwtUtil.generateToken(
-                saved.getId(),
-                saved.getEmail(),
-                saved.getRole()
-        );
-
-        return ResponseEntity.ok(new JwtResponse(token));
+        return ResponseEntity.ok("User registered successfully");
     }
 
+    // ✅ LOGIN (NO JWT, SECURITY DISABLED)
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getEmail(),
-                            request.getPassword()
-                    )
-            );
-        } catch (BadCredentialsException ex) {
-            throw new UnauthorizedException("Invalid credentials");
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+
+        UserAccount user = userAccountRepository
+                .findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid credentials");
         }
 
-        UserAccount user =
-                userAccountService.findByEmailOrThrow(request.getEmail());
-
-        String token = jwtUtil.generateToken(
-                user.getId(),
-                user.getEmail(),
-                user.getRole()
-        );
-
-        return ResponseEntity.ok(new JwtResponse(token));
+        return ResponseEntity.ok("Login successful");
     }
 }
