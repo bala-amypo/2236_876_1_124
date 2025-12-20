@@ -38,7 +38,7 @@ public class SpendCategoryServiceImpl implements SpendCategoryService {
 
     @Override
     public List<SpendCategory> getAllActive() {
-        return repository.findByActiveTrue();
+        return repository.findAllByActiveTrue();
     }
 
     @Override
@@ -46,10 +46,5 @@ public class SpendCategoryServiceImpl implements SpendCategoryService {
         SpendCategory category = getActiveById(id);
         category.setActive(false);
         return repository.save(category);
-    }
-
-    @Override
-    public List<SpendCategory> getAllCategories() {
-        return repository.findAll();
     }
 }
