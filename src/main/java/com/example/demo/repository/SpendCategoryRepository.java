@@ -6,12 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SpendCategoryRepository extends JpaRepository<SpendCategory, Long> {
-
-    boolean existsByCode(String code);
-
     boolean existsByName(String name);
-
-    List<SpendCategory> findByActiveTrue();
-
+    boolean existsByCode(String code);
     Optional<SpendCategory> findByIdAndActiveTrue(Long id);
+    List<SpendCategory> findAllByActiveTrue();
 }
