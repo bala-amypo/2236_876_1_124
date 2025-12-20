@@ -2,8 +2,6 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "suppliers")
@@ -13,35 +11,40 @@ public class Supplier {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String name;
+
+    @Column(nullable = false)
     private String email;
-    private String registrationNumber;
-    private Boolean isActive;
+
+    @Column(nullable = false)
+    private String phone;
+
+    @Column(nullable = false)
+    private String address;
+
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    @ManyToMany
-    private Set<DiversityClassification> diversityClassifications = new HashSet<>();
-
+    // Constructors
     public Supplier() {}
 
-    @PrePersist
-    public void prePersist() {
-        if (isActive == null) isActive = true;
-        if (createdAt == null) createdAt = LocalDateTime.now();
+    public Supplier(Long id, String name, String email, String phone, String address, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
-    // getters & setters
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-
-    public Boolean getIsActive() { return isActive; }
-    public void setIsActive(Boolean active) { isActive = active; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
@@ -49,10 +52,5 @@ public class Supplier {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public String getRegistrationNumber() { return registrationNumber; }
-    public void setRegistrationNumber(String registrationNumber) { this.registrationNumber = registrationNumber; }
-
-    public Set<DiversityClassification> getDiversityClassifications() {
-        return diversityClassifications;
-    }
-}
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone =
