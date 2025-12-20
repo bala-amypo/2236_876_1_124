@@ -8,9 +8,6 @@ import com.example.demo.exception.UnauthorizedException;
 import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserAccountService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,20 +15,13 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final UserAccountService userAccountService;
-    private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    public AuthController(
-            UserAccountService userAccountService,
-            AuthenticationManager authenticationManager,
-            JwtUtil jwtUtil
-    ) {
+    public AuthController(UserAccountService userAccountService, JwtUtil jwtUtil) {
         this.userAccountService = userAccountService;
-        this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
     }
 
-    // ================= REGISTER =================
     @PostMapping("/register")
     public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
 
@@ -52,22 +42,14 @@ public class AuthController {
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
-    // ================= LOGIN =================
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
 
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getEmail(),
-                            request.getPassword()
-                    )
-            );
-        } catch (BadCredentialsException ex) {
+        UserAccount user = userAccountService.findByEmail(request.getEmail());
+
+        if (user == null || !user.getPassword().equals(request.getPassword())) {
             throw new UnauthorizedException("Invalid credentials");
         }
-
-        UserAccount user = userAccountService.findByEmailOrThrow(request.getEmail());
 
         String token = jwtUtil.generateToken(
                 user.getId(),
