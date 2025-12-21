@@ -9,8 +9,8 @@ import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserAccountService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,14 +18,16 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final UserAccountService userAccountService;
-    private final AuthenticationManager authManager;
+    private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    public AuthController(UserAccountService userAccountService,
-                          AuthenticationManager authManager,
-                          JwtUtil jwtUtil) {
+    public AuthController(
+            UserAccountService userAccountService,
+            AuthenticationManager authenticationManager,
+            JwtUtil jwtUtil
+    ) {
         this.userAccountService = userAccountService;
-        this.authManager = authManager;
+        this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
     }
 
@@ -38,21 +40,37 @@ public class AuthController {
         user.setRole(req.getRole());
 
         UserAccount saved = userAccountService.register(user);
-        String token = jwtUtil.generateToken(saved.getId(), saved.getEmail(), saved.getRole());
+
+        String token = jwtUtil.generateToken(
+                saved.getId(),
+                saved.getEmail(),
+                saved.getRole()
+        );
+
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest req) {
         try {
-            authManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword())
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            req.getEmail(),
+                            req.getPassword()
+                    )
             );
         } catch (BadCredentialsException ex) {
             throw new UnauthorizedException("Invalid credentials");
         }
+
         UserAccount user = userAccountService.findByEmailOrThrow(req.getEmail());
-        String token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole());
+
+        String token = jwtUtil.generateToken(
+                user.getId(),
+                user.getEmail(),
+                user.getRole()
+        );
+
         return ResponseEntity.ok(new JwtResponse(token));
     }
 }

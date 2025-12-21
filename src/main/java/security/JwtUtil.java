@@ -1,27 +1,36 @@
 package com.example.demo.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.stereotype.Component;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 
+import java.security.Key;
 import java.util.Date;
 
-@Component
 public class JwtUtil {
 
-    private final String SECRET_KEY = "supplier-diversity-secret-key-1234567890";
-    private final long EXPIRATION_TIME = 14L * 24 * 60 * 60 * 1000; // 2 weeks
+    private final Key key;
+    private final long expirationMs;
 
-    // Generate token with userId, email, role
+    // ✅ REQUIRED by tests
+    public JwtUtil(byte[] secret, long expirationMs) {
+        this.key = Keys.hmacShaKeyFor(secret);
+        this.expirationMs = expirationMs;
+    }
+
+    // Optional default constructor for Spring usage
+    public JwtUtil() {
+        this("default-test-secret-key-1234567890".getBytes(), 3600000L);
+    }
+
+    // ✅ REQUIRED by tests
     public String generateToken(Long userId, String email, String role) {
         return Jwts.builder()
                 .claim("userId", userId)
                 .claim("role", role)
                 .setSubject(email)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -40,15 +49,16 @@ public class JwtUtil {
     public boolean validateToken(String token) {
         try {
             Claims claims = getClaims(token);
-            return !claims.getExpiration().before(new Date());
-        } catch (Exception e) {
+            return claims.getExpiration().after(new Date());
+        } catch (Exception ex) {
             return false;
         }
     }
 
     private Claims getClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(SECRET_KEY)
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
