@@ -14,7 +14,7 @@ public class JwtUtil {
     private static final String SECRET_KEY = "demo-secret-key-123456";
 
     // 1 hour
-    private static final long EXPIRATION_TIME = 60 * 60 * 1000;
+    private static final long EXPIRATION_TIME = 3600000L;
 
     public String generateToken(Long userId, String email, String role) {
 
