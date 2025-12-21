@@ -1,6 +1,9 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "suppliers")
@@ -11,41 +14,55 @@ public class Supplier {
     private Long id;
 
     private String name;
-
     private String email;
+    private String registrationNumber;
 
-    private String phone;
+    private Boolean isActive = true; // ✅ matches your tests
 
-    private String address;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-    // Constructors
+    @ManyToMany
+    @JoinTable(
+        name = "supplier_classification",
+        joinColumns = @JoinColumn(name = "supplier_id"),
+        inverseJoinColumns = @JoinColumn(name = "classification_id")
+    )
+    private Set<DiversityClassification> diversityClassifications = new HashSet<>();
+
     public Supplier() {}
-
-    public Supplier(String name, String email, String phone, String address) {
-        this.name = name;
-        this.email = email;
-        this.phone = phone;
-        this.address = address;
-    }
 
     // Getters and Setters
     public Long getId() { return id; }
-
     public void setId(Long id) { this.id = id; }
 
     public String getName() { return name; }
-
     public void setName(String name) { this.name = name; }
 
     public String getEmail() { return email; }
-
     public void setEmail(String email) { this.email = email; }
 
-    public String getPhone() { return phone; }
+    public String getRegistrationNumber() { return registrationNumber; }
+    public void setRegistrationNumber(String registrationNumber) { this.registrationNumber = registrationNumber; }
 
-    public void setPhone(String phone) { this.phone = phone; }
+    public Boolean getIsActive() { return isActive; } // ✅ matches tests
+    public void setIsActive(Boolean isActive) { this.isActive = isActive; } // ✅ matches tests
 
-    public String getAddress() { return address; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
-    public void setAddress(String address) { this.address = address; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public Set<DiversityClassification> getDiversityClassifications() { return diversityClassifications; }
+    public void setDiversityClassifications(Set<DiversityClassification> diversityClassifications) {
+        this.diversityClassifications = diversityClassifications;
+    }
+
+    // Lifecycle callback for pre-persist
+    @PrePersist
+    public void prePersist() {
+        if (isActive == null) isActive = true;
+        if (createdAt == null) createdAt = LocalDateTime.now();
+    }
 }
