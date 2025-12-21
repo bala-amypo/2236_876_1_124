@@ -27,6 +27,7 @@ public class DiversityClassification {
 
     // One-to-many with DiversityTarget
     @OneToMany(mappedBy = "classification")
+    @JsonIgnore
     private Set<DiversityTarget> diversityTargets = new HashSet<>();
 
     public DiversityClassification() {}
