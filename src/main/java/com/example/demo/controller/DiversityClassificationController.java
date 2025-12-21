@@ -2,13 +2,12 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.DiversityClassification;
 import com.example.demo.service.DiversityClassificationService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/diversity")
+@RequestMapping("/api/classifications")
 public class DiversityClassificationController {
 
     private final DiversityClassificationService service;
@@ -18,29 +17,22 @@ public class DiversityClassificationController {
     }
 
     @PostMapping
-    public ResponseEntity<DiversityClassification> create(@RequestBody DiversityClassification entity) {
-        return ResponseEntity.ok(service.create(entity));
-    }
-
-    @GetMapping
-    public ResponseEntity<List<DiversityClassification>> getAll() {
-        return ResponseEntity.ok(service.getAll());
+    public DiversityClassification create(@RequestBody DiversityClassification dc) {
+        return service.createClassification(dc);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DiversityClassification> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(service.getById(id));
+    public DiversityClassification getById(@PathVariable Long id) {
+        return service.getClassificationById(id);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<DiversityClassification> update(@PathVariable Long id,
-                                                          @RequestBody DiversityClassification entity) {
-        return ResponseEntity.ok(service.update(id, entity));
+    @GetMapping
+    public List<DiversityClassification> getAll() {
+        return service.getAllClassifications();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        service.delete(id);
-        return ResponseEntity.noContent().build();
+    @PutMapping("/{id}/deactivate")
+    public void deactivate(@PathVariable Long id) {
+        service.deactivateClassification(id);
     }
 }

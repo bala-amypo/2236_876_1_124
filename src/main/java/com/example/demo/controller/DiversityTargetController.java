@@ -2,13 +2,12 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.DiversityTarget;
 import com.example.demo.service.DiversityTargetService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/diversity-targets")
+@RequestMapping("/api/targets")
 public class DiversityTargetController {
 
     private final DiversityTargetService service;
@@ -18,29 +17,22 @@ public class DiversityTargetController {
     }
 
     @PostMapping
-    public ResponseEntity<DiversityTarget> create(@RequestBody DiversityTarget entity) {
-        return ResponseEntity.ok(service.create(entity));
+    public DiversityTarget create(@RequestBody DiversityTarget target) {
+        return service.createTarget(target);
+    }
+
+    @GetMapping("/year/{year}")
+    public List<DiversityTarget> getByYear(@PathVariable int year) {
+        return service.getTargetsByYear(year);
     }
 
     @GetMapping
-    public ResponseEntity<List<DiversityTarget>> getAll() {
-        return ResponseEntity.ok(service.getAll());
+    public List<DiversityTarget> getAll() {
+        return service.getAllTargets();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<DiversityTarget> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(service.getById(id));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<DiversityTarget> update(@PathVariable Long id,
-                                                  @RequestBody DiversityTarget entity) {
-        return ResponseEntity.ok(service.update(id, entity));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        service.delete(id);
-        return ResponseEntity.noContent().build();
+    @PutMapping("/{id}/deactivate")
+    public void deactivate(@PathVariable Long id) {
+        service.deactivateTarget(id);
     }
 }
