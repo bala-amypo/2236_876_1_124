@@ -9,31 +9,26 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
 
-    // ✅ REQUIRED FOR AuthController
+    // ✅ REQUIRED BY AuthController
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
-    // ✅ BASIC FILTER CHAIN (Swagger + APIs work)
+    // ✅ REQUIRED BY authenticationProvider
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll()
-            );
-
-        return http.build();
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
-    // ✅ Authentication provider (uses your UserDetailsService)
+    // ✅ AUTH PROVIDER
     @Bean
     public AuthenticationProvider authenticationProvider(
             UserDetailsService userDetailsService,
@@ -43,5 +38,17 @@ public class SecurityConfig {
         provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder);
         return provider;
+    }
+
+    // ✅ SECURITY FILTER CHAIN (Swagger + APIs work)
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().permitAll()
+            );
+
+        return http.build();
     }
 }
