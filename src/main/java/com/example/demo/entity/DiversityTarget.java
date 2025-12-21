@@ -10,34 +10,26 @@ public class DiversityTarget {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int targetYear;
-    private Double targetPercentage;
+    private String targetName;
+    private String description;
     private Boolean active;
 
-    @ManyToOne
-    private DiversityClassification classification;
-
     @PrePersist
+    @PreUpdate
     public void preSave() {
         if (active == null) active = true;
     }
 
+    // Getters & Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
+    public String getTargetName() { return targetName; }
+    public void setTargetName(String targetName) { this.targetName = targetName; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
     public Boolean getActive() { return active; }
     public void setActive(Boolean active) { this.active = active; }
-
-    public int getTargetYear() { return targetYear; }
-    public void setTargetYear(int targetYear) { this.targetYear = targetYear; }
-
-    public Double getTargetPercentage() { return targetPercentage; }
-    public void setTargetPercentage(Double targetPercentage) {
-        this.targetPercentage = targetPercentage;
-    }
-
-    public DiversityClassification getClassification() { return classification; }
-    public void setClassification(DiversityClassification classification) {
-        this.classification = classification;
-    }
 }
