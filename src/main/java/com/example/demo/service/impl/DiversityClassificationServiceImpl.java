@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service // ✅ Important: tells Spring to create a bean
+@Service
 public class DiversityClassificationServiceImpl implements DiversityClassificationService {
 
     private final DiversityClassificationRepository repo;
@@ -28,13 +28,16 @@ public class DiversityClassificationServiceImpl implements DiversityClassificati
 
     @Override
     public DiversityClassification getById(Long id) {
-        return repo.findById(id).orElseThrow(() -> new RuntimeException("Not found"));
+        return repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("DiversityClassification not found with id: " + id));
     }
 
     @Override
     public DiversityClassification update(Long id, DiversityClassification entity) {
         DiversityClassification existing = getById(id);
-        existing.setName(entity.getName());
+        existing.setCode(entity.getCode());
+        existing.setDescription(entity.getDescription());
+        existing.setActive(entity.getActive());
         return repo.save(existing);
     }
 
