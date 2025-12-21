@@ -1,13 +1,13 @@
 package com.example.demo.repository;
 
 import com.example.demo.entity.Supplier;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface SupplierRepository {
-    Supplier save(Supplier supplier);
-    Optional<Supplier> findById(Long id);
-    List<Supplier> findAll();
-    boolean existsByEmail(String email);
+import java.util.List;
+
+public interface SupplierRepository extends JpaRepository<Supplier, Long> {
+
     List<Supplier> findByIsActiveTrue();
+
+    boolean existsByEmail(String email);
 }
