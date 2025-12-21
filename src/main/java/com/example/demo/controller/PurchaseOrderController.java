@@ -2,7 +2,6 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.PurchaseOrder;
 import com.example.demo.service.PurchaseOrderService;
-import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,21 +11,37 @@ import java.util.List;
 @RequestMapping("/api/purchase-orders")
 public class PurchaseOrderController {
 
-    private final PurchaseOrderService service;
+    private final PurchaseOrderService purchaseOrderService;
 
-    public PurchaseOrderController(PurchaseOrderService service) {
-        this.service = service;
+    public PurchaseOrderController(PurchaseOrderService purchaseOrderService) {
+        this.purchaseOrderService = purchaseOrderService;
     }
 
-    @Operation(summary = "Create purchase order")
     @PostMapping
-    public ResponseEntity<PurchaseOrder> create(@RequestBody PurchaseOrder po) {
-        return ResponseEntity.ok(service.createPurchaseOrder(po));
+    public ResponseEntity<PurchaseOrder> create(@RequestBody PurchaseOrder purchaseOrder) {
+        return ResponseEntity.ok(purchaseOrderService.createPurchaseOrder(purchaseOrder));
     }
 
-    @Operation(summary = "Get all POs by supplier ID")
-    @GetMapping("/supplier/{id}")
-    public ResponseEntity<List<PurchaseOrder>> getBySupplier(@PathVariable Long id) {
-        return ResponseEntity.ok(service.getPurchaseOrdersBySupplier(id));
+    @GetMapping
+    public ResponseEntity<List<PurchaseOrder>> getAll() {
+        return ResponseEntity.ok(purchaseOrderService.getAllPurchaseOrders());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PurchaseOrder> getById(@PathVariable Long id) {
+        return purchaseOrderService.getPurchaseOrderById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PurchaseOrder> update(@PathVariable Long id, @RequestBody PurchaseOrder purchaseOrder) {
+        return ResponseEntity.ok(purchaseOrderService.updatePurchaseOrder(id, purchaseOrder));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        purchaseOrderService.deletePurchaseOrder(id);
+        return ResponseEntity.noContent().build();
     }
 }
