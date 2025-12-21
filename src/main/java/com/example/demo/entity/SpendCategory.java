@@ -1,5 +1,5 @@
 package com.example.demo.entity;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,6 +20,7 @@ public class SpendCategory {
 
     // One-to-many with PurchaseOrder
     @OneToMany(mappedBy = "category")
+    @JsonIgnore
     private Set<PurchaseOrder> purchaseOrders = new HashSet<>();
 
     public SpendCategory() {}

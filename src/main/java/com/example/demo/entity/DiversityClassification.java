@@ -1,5 +1,5 @@
 package com.example.demo.entity;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,6 +22,7 @@ public class DiversityClassification {
 
     // Many-to-many with Supplier
     @ManyToMany(mappedBy = "diversityClassifications")
+    @JsonIgnore
     private Set<Supplier> suppliers = new HashSet<>();
 
     // One-to-many with DiversityTarget
