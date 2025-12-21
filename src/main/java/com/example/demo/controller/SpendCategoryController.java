@@ -2,32 +2,46 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.SpendCategory;
 import com.example.demo.service.SpendCategoryService;
-import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping("/api/spend-categories")
 public class SpendCategoryController {
 
-    private final SpendCategoryService service;
+    private final SpendCategoryService spendCategoryService;
 
-    public SpendCategoryController(SpendCategoryService service) {
-        this.service = service;
+    public SpendCategoryController(SpendCategoryService spendCategoryService) {
+        this.spendCategoryService = spendCategoryService;
     }
 
-    @Operation(summary = "Get all spend categories")
+    @PostMapping
+    public ResponseEntity<SpendCategory> create(@RequestBody SpendCategory spendCategory) {
+        return ResponseEntity.ok(spendCategoryService.createSpendCategory(spendCategory));
+    }
+
     @GetMapping
     public ResponseEntity<List<SpendCategory>> getAll() {
-        return ResponseEntity.ok(service.getAllCategories());
+        return ResponseEntity.ok(spendCategoryService.getAllSpendCategories());
     }
 
-    @Operation(summary = "Deactivate category")
-    @PutMapping("/{id}/deactivate")
-    public ResponseEntity<Void> deactivate(@PathVariable Long id) {
-        service.deactivateCategory(id);
-        return ResponseEntity.ok().build();
+    @GetMapping("/{id}")
+    public ResponseEntity<SpendCategory> getById(@PathVariable Long id) {
+        return spendCategoryService.getSpendCategoryById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<SpendCategory> update(@PathVariable Long id, @RequestBody SpendCategory spendCategory) {
+        return ResponseEntity.ok(spendCategoryService.updateSpendCategory(id, spendCategory));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        spendCategoryService.deleteSpendCategory(id);
+        return ResponseEntity.noContent().build();
     }
 }
