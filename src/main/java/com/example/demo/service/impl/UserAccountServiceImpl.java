@@ -8,14 +8,17 @@ import com.example.demo.service.UserAccountService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-@Service // ✅ This tells Spring to manage this class as a bean
+@Service
 public class UserAccountServiceImpl implements UserAccountService {
 
     private final UserAccountRepository repo;
     private final PasswordEncoder passwordEncoder;
 
-    // Spring will automatically inject these beans
-    public UserAccountServiceImpl(UserAccountRepository repo, PasswordEncoder passwordEncoder) {
+    // Spring injects both beans automatically
+    public UserAccountServiceImpl(
+            UserAccountRepository repo,
+            PasswordEncoder passwordEncoder
+    ) {
         this.repo = repo;
         this.passwordEncoder = passwordEncoder;
     }
@@ -25,6 +28,7 @@ public class UserAccountServiceImpl implements UserAccountService {
         if (repo.existsByEmail(user.getEmail())) {
             throw new BadRequestException("Email already exists");
         }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return repo.save(user);
     }
@@ -32,6 +36,8 @@ public class UserAccountServiceImpl implements UserAccountService {
     @Override
     public UserAccount findByEmailOrThrow(String email) {
         return repo.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found")
+                );
     }
 }
