@@ -11,29 +11,34 @@ public class JwtUtil {
     private final Key key;
     private final long expirationMs;
 
-    // ✅ REQUIRED by tests
+    // Constructor used in tests
     public JwtUtil(byte[] secret, long expirationMs) {
         this.key = Keys.hmacShaKeyFor(secret);
         this.expirationMs = expirationMs;
     }
 
-    // Optional default constructor for Spring usage
+    // Default constructor for Spring
     public JwtUtil() {
-        this("default-test-secret-key-1234567890".getBytes(), 3600000L);
+        this.key = Keys.hmacShaKeyFor(
+                "supplier-diversity-secret-key-1234567890"
+                        .getBytes(java.nio.charset.StandardCharsets.UTF_8)
+        );
+        this.expirationMs = 3600000L;
     }
 
-    // ✅ REQUIRED by tests
+    // ---------------- TOKEN GENERATION ----------------
     public String generateToken(Long userId, String email, String role) {
         return Jwts.builder()
-                .claim("userId", userId)
-                .claim("role", role)
                 .setSubject(email)
+                .claim("role", role)
+                .claim("userId", userId)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
+    // ---------------- EXTRACTION METHODS ----------------
     public String extractEmail(String token) {
         return getClaims(token).getSubject();
     }
@@ -46,10 +51,16 @@ public class JwtUtil {
         return getClaims(token).get("userId", Long.class);
     }
 
+    // 🔧 Compatibility for JwtAuthenticationFilter
+    public String getUsernameFromToken(String token) {
+        return extractEmail(token);
+    }
+
+    // ---------------- VALIDATION ----------------
     public boolean validateToken(String token) {
         try {
-            Claims claims = getClaims(token);
-            return claims.getExpiration().after(new Date());
+            getClaims(token);
+            return true;
         } catch (Exception ex) {
             return false;
         }
