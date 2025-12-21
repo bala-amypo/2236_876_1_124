@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.SpendCategory;
 import com.example.demo.service.SpendCategoryService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,23 +18,16 @@ public class SpendCategoryController {
         this.service = service;
     }
 
-    @PostMapping
-    public ResponseEntity<SpendCategory> create(@RequestBody SpendCategory category) {
-        return ResponseEntity.ok(service.create(category));
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<SpendCategory> getActive(@PathVariable Long id) {
-        return ResponseEntity.ok(service.getActiveById(id));
-    }
-
+    @Operation(summary = "Get all spend categories")
     @GetMapping
     public ResponseEntity<List<SpendCategory>> getAll() {
-        return ResponseEntity.ok(service.getAllActive());
+        return ResponseEntity.ok(service.getAllCategories());
     }
 
-    @PutMapping("/deactivate/{id}")
-    public ResponseEntity<SpendCategory> deactivate(@PathVariable Long id) {
-        return ResponseEntity.ok(service.deactivateCategory(id));
+    @Operation(summary = "Deactivate category")
+    @PutMapping("/{id}/deactivate")
+    public ResponseEntity<Void> deactivate(@PathVariable Long id) {
+        service.deactivateCategory(id);
+        return ResponseEntity.ok().build();
     }
 }
