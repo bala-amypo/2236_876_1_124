@@ -11,37 +11,41 @@ import java.util.List;
 @RequestMapping("/api/spend-categories")
 public class SpendCategoryController {
 
-    private final SpendCategoryService spendCategoryService;
+    private final SpendCategoryService service;
 
-    public SpendCategoryController(SpendCategoryService spendCategoryService) {
-        this.spendCategoryService = spendCategoryService;
-    }
-
-    @PostMapping
-    public ResponseEntity<SpendCategory> create(@RequestBody SpendCategory spendCategory) {
-        return ResponseEntity.ok(spendCategoryService.createSpendCategory(spendCategory));
+    public SpendCategoryController(SpendCategoryService service) {
+        this.service = service;
     }
 
     @GetMapping
-    public ResponseEntity<List<SpendCategory>> getAll() {
-        return ResponseEntity.ok(spendCategoryService.getAllSpendCategories());
+    public ResponseEntity<List<SpendCategory>> getAllCategories() {
+        return ResponseEntity.ok(service.getAllCategories());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SpendCategory> getById(@PathVariable Long id) {
-        return spendCategoryService.getSpendCategoryById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<SpendCategory> getCategoryById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getCategoryById(id));
+    }
+
+    @PostMapping
+    public ResponseEntity<SpendCategory> createCategory(@RequestBody SpendCategory category) {
+        return ResponseEntity.ok(service.createCategory(category));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SpendCategory> update(@PathVariable Long id, @RequestBody SpendCategory spendCategory) {
-        return ResponseEntity.ok(spendCategoryService.updateSpendCategory(id, spendCategory));
+    public ResponseEntity<SpendCategory> updateCategory(@PathVariable Long id, @RequestBody SpendCategory category) {
+        return ResponseEntity.ok(service.updateCategory(id, category));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        spendCategoryService.deleteSpendCategory(id);
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+        service.deleteCategory(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<Void> deactivateCategory(@PathVariable Long id) {
+        service.deactivateCategory(id);
         return ResponseEntity.noContent().build();
     }
 }

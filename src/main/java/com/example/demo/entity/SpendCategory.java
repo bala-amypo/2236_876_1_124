@@ -1,6 +1,8 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "spend_categories")
@@ -10,19 +12,33 @@ public class SpendCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String name;
 
-    private String description;
+    @Column(nullable = false)
+    private Boolean active = true;
 
+    // One-to-many relationship with PurchaseOrder
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<PurchaseOrder> purchaseOrders = new HashSet<>();
+
+    // --------------------
     // Constructors
+    // --------------------
     public SpendCategory() {}
 
-    public SpendCategory(String name, String description) {
+    public SpendCategory(String name) {
         this.name = name;
-        this.description = description;
     }
 
+    public SpendCategory(String name, Boolean active) {
+        this.name = name;
+        this.active = active;
+    }
+
+    // --------------------
     // Getters and Setters
+    // --------------------
     public Long getId() { return id; }
 
     public void setId(Long id) { this.id = id; }
@@ -31,7 +47,24 @@ public class SpendCategory {
 
     public void setName(String name) { this.name = name; }
 
-    public String getDescription() { return description; }
+    public Boolean getActive() { return active; }
 
-    public void setDescription(String description) { this.description = description; }
+    public void setActive(Boolean active) { this.active = active; }
+
+    public Set<PurchaseOrder> getPurchaseOrders() { return purchaseOrders; }
+
+    public void setPurchaseOrders(Set<PurchaseOrder> purchaseOrders) {
+        this.purchaseOrders = purchaseOrders;
+    }
+
+    // --------------------
+    // Lifecycle Hook
+    // --------------------
+    @PrePersist
+    @PreUpdate
+    public void preSave() {
+        if (this.active == null) {
+            this.active = true;
+        }
+    }
 }

@@ -1,6 +1,8 @@
 package com.example.demo.entity;
 
+import com.example.demo.exception.BadRequestException;
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -8,45 +10,97 @@ import java.time.LocalDate;
 public class PurchaseOrder {
 
     @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String orderNumber;
+    @Column(nullable = false, unique = true)
+    private String poNumber;
 
-    private String supplier;
+    @Column(nullable = false)
+    private BigDecimal amount;
 
-    private LocalDate orderDate;
+    @Column(nullable = false)
+    private LocalDate dateIssued;
 
-    private Double totalAmount;
+    @ManyToOne
+    @JoinColumn(name = "supplier_id", nullable = false)
+    private Supplier supplier;
 
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private SpendCategory category;
+
+    @Column(length = 500)
+    private String notes;
+
+    // --------------------
     // Constructors
+    // --------------------
     public PurchaseOrder() {}
 
-    public PurchaseOrder(String orderNumber, String supplier, LocalDate orderDate, Double totalAmount) {
-        this.orderNumber = orderNumber;
+    public PurchaseOrder(String poNumber, BigDecimal amount, LocalDate dateIssued, Supplier supplier, SpendCategory category) {
+        this.poNumber = poNumber;
+        this.amount = amount;
+        this.dateIssued = dateIssued;
         this.supplier = supplier;
-        this.orderDate = orderDate;
-        this.totalAmount = totalAmount;
+        this.category = category;
     }
 
-    // Getters and Setters
+    // --------------------
+    // Getters & Setters
+    // --------------------
     public Long getId() { return id; }
 
     public void setId(Long id) { this.id = id; }
 
-    public String getOrderNumber() { return orderNumber; }
+    public String getPoNumber() { return poNumber; }
 
-    public void setOrderNumber(String orderNumber) { this.orderNumber = orderNumber; }
+    public void setPoNumber(String poNumber) { this.poNumber = poNumber; }
 
-    public String getSupplier() { return supplier; }
+    public BigDecimal getAmount() { return amount; }
 
-    public void setSupplier(String supplier) { this.supplier = supplier; }
+    public void setAmount(BigDecimal amount) { this.amount = amount; }
 
-    public LocalDate getOrderDate() { return orderDate; }
+    public LocalDate getDateIssued() { return dateIssued; }
 
-    public void setOrderDate(LocalDate orderDate) { this.orderDate = orderDate; }
+    public void setDateIssued(LocalDate dateIssued) { this.dateIssued = dateIssued; }
 
-    public Double getTotalAmount() { return totalAmount; }
+    public Supplier getSupplier() { return supplier; }
 
-    public void setTotalAmount(Double totalAmount) { this.totalAmount = totalAmount; }
+    public void setSupplier(Supplier supplier) { this.supplier = supplier; }
+
+    public SpendCategory getCategory() { return category; }
+
+    public void setCategory(SpendCategory category) { this.category = category; }
+
+    public String getNotes() { return notes; }
+
+    public void setNotes(String notes) { this.notes = notes; }
+
+    // --------------------
+    // Business Rules
+    // --------------------
+    @PrePersist
+    @PreUpdate
+    public void validate() {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BadRequestException("Purchase order amount must be positive");
+        }
+
+        if (dateIssued == null) {
+            throw new BadRequestException("Purchase order date cannot be null");
+        }
+
+        if (dateIssued.isAfter(LocalDate.now())) {
+            throw new BadRequestException("Purchase order date cannot be in the future");
+        }
+
+        if (supplier == null || !Boolean.TRUE.equals(supplier.getIsActive())) {
+            throw new BadRequestException("Cannot assign PO to inactive supplier");
+        }
+
+        if (category == null || !Boolean.TRUE.equals(category.getActive())) {
+            throw new BadRequestException("Cannot assign PO to inactive category");
+        }
+    }
 }
