@@ -11,37 +11,40 @@ import java.util.List;
 @RequestMapping("/api/purchase-orders")
 public class PurchaseOrderController {
 
-    private final PurchaseOrderService purchaseOrderService;
+    private final PurchaseOrderService service;
 
-    public PurchaseOrderController(PurchaseOrderService purchaseOrderService) {
-        this.purchaseOrderService = purchaseOrderService;
-    }
-
-    @PostMapping
-    public ResponseEntity<PurchaseOrder> create(@RequestBody PurchaseOrder purchaseOrder) {
-        return ResponseEntity.ok(purchaseOrderService.createPurchaseOrder(purchaseOrder));
+    public PurchaseOrderController(PurchaseOrderService service) {
+        this.service = service;
     }
 
     @GetMapping
-    public ResponseEntity<List<PurchaseOrder>> getAll() {
-        return ResponseEntity.ok(purchaseOrderService.getAllPurchaseOrders());
+    public ResponseEntity<List<PurchaseOrder>> getAllPurchaseOrders() {
+        return ResponseEntity.ok(service.getAllPurchaseOrders());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PurchaseOrder> getById(@PathVariable Long id) {
-        return purchaseOrderService.getPurchaseOrderById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<PurchaseOrder> getPurchaseOrderById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getPurchaseOrderById(id));
+    }
+
+    @PostMapping
+    public ResponseEntity<PurchaseOrder> createPurchaseOrder(@RequestBody PurchaseOrder po) {
+        return ResponseEntity.ok(service.createPurchaseOrder(po));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PurchaseOrder> update(@PathVariable Long id, @RequestBody PurchaseOrder purchaseOrder) {
-        return ResponseEntity.ok(purchaseOrderService.updatePurchaseOrder(id, purchaseOrder));
+    public ResponseEntity<PurchaseOrder> updatePurchaseOrder(@PathVariable Long id, @RequestBody PurchaseOrder po) {
+        return ResponseEntity.ok(service.updatePurchaseOrder(id, po));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        purchaseOrderService.deletePurchaseOrder(id);
+    public ResponseEntity<Void> deletePurchaseOrder(@PathVariable Long id) {
+        service.deletePurchaseOrder(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/supplier/{supplierId}")
+    public ResponseEntity<List<PurchaseOrder>> getPurchaseOrdersBySupplier(@PathVariable Long supplierId) {
+        return ResponseEntity.ok(service.getPurchaseOrdersBySupplier(supplierId));
     }
 }
