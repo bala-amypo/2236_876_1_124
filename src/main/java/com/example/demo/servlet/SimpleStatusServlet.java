@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 public class SimpleStatusServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("text/plain");
         PrintWriter writer = resp.getWriter();
         writer.write("Supplier Diversity Tracker is running");
