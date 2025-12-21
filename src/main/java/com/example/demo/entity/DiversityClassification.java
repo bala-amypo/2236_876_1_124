@@ -26,13 +26,19 @@ public class DiversityClassification {
         if (code != null) code = code.toUpperCase();
     }
 
-    // getters/setters
+    // Getters & Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
+    public String getCode() { return code; }
+    public void setCode(String code) { this.code = code; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
     public Boolean getActive() { return active; }
     public void setActive(Boolean active) { this.active = active; }
 
-    public String getCode() { return code; }
-    public void setCode(String code) { this.code = code; }
+    public Set<Supplier> getSuppliers() { return suppliers; }
+    public void setSuppliers(Set<Supplier> suppliers) { this.suppliers = suppliers; }
 }
