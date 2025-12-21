@@ -1,9 +1,6 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "suppliers")
@@ -15,55 +12,40 @@ public class Supplier {
 
     private String name;
 
-    @Column(unique = true)
     private String email;
 
-    private String registrationNumber;
+    private String phone;
 
-    private Boolean isActive;
+    private String address;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    // Constructors
+    public Supplier() {}
 
-    @ManyToMany
-    @JoinTable(
-        name = "supplier_classifications",
-        joinColumns = @JoinColumn(name = "supplier_id"),
-        inverseJoinColumns = @JoinColumn(name = "classification_id")
-    )
-    private Set<DiversityClassification> diversityClassifications = new HashSet<>();
-
-    @PrePersist
-    public void prePersist() {
-        if (isActive == null) isActive = true;
-        if (createdAt == null) createdAt = LocalDateTime.now();
+    public Supplier(String name, String email, String phone, String address) {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
     }
 
-    // getters & setters
+    // Getters and Setters
     public Long getId() { return id; }
+
     public void setId(Long id) { this.id = id; }
 
-    public Boolean getIsActive() { return isActive; }
-    public void setIsActive(Boolean active) { isActive = active; }
-
     public String getName() { return name; }
+
     public void setName(String name) { this.name = name; }
 
     public String getEmail() { return email; }
+
     public void setEmail(String email) { this.email = email; }
 
-    public String getRegistrationNumber() { return registrationNumber; }
-    public void setRegistrationNumber(String registrationNumber) {
-        this.registrationNumber = registrationNumber;
-    }
+    public String getPhone() { return phone; }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+    public void setPhone(String phone) { this.phone = phone; }
 
-    public Set<DiversityClassification> getDiversityClassifications() {
-        return diversityClassifications;
-    }
+    public String getAddress() { return address; }
+
+    public void setAddress(String address) { this.address = address; }
 }
