@@ -2,71 +2,52 @@ package com.example.demo.service.impl;
 
 import com.example.demo.entity.PurchaseOrder;
 import com.example.demo.exception.BadRequestException;
-import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.PurchaseOrderRepository;
 import com.example.demo.repository.SpendCategoryRepository;
 import com.example.demo.repository.SupplierRepository;
 import com.example.demo.service.PurchaseOrderService;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
 public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
-    private final PurchaseOrderRepository poRepository;
+    private final PurchaseOrderRepository purchaseOrderRepository;
     private final SupplierRepository supplierRepository;
     private final SpendCategoryRepository categoryRepository;
 
-    public PurchaseOrderServiceImpl(PurchaseOrderRepository poRepository,
+    public PurchaseOrderServiceImpl(PurchaseOrderRepository purchaseOrderRepository,
                                     SupplierRepository supplierRepository,
                                     SpendCategoryRepository categoryRepository) {
-        this.poRepository = poRepository;
+        this.purchaseOrderRepository = purchaseOrderRepository;
         this.supplierRepository = supplierRepository;
         this.categoryRepository = categoryRepository;
     }
 
     @Override
-    public List<PurchaseOrder> getAllPurchaseOrders() {
-        return poRepository.findAll();
-    }
-
-    @Override
-    public PurchaseOrder getPurchaseOrderById(Long id) {
-        return poRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("PurchaseOrder not found with id " + id));
-    }
-
-    @Override
     public PurchaseOrder createPurchaseOrder(PurchaseOrder po) {
-        // Validation occurs in @PrePersist of entity
-        return poRepository.save(po);
-    }
+        if (po.getAmount() == null || po.getAmount().compareTo(java.math.BigDecimal.ZERO) <= 0)
+            throw new BadRequestException("Amount must be positive");
 
-    @Override
-    public PurchaseOrder updatePurchaseOrder(Long id, PurchaseOrder updatedPo) {
-        PurchaseOrder po = poRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("PurchaseOrder not found with id " + id));
+        if (po.getDateIssued() == null || po.getDateIssued().isAfter(java.time.LocalDate.now()))
+            throw new BadRequestException("dateIssued cannot be in the future");
 
-        po.setPoNumber(updatedPo.getPoNumber());
-        po.setAmount(updatedPo.getAmount());
-        po.setDateIssued(updatedPo.getDateIssued());
-        po.setSupplier(updatedPo.getSupplier());
-        po.setCategory(updatedPo.getCategory());
-        po.setNotes(updatedPo.getNotes());
+        if (po.getSupplier() == null || !po.getSupplier().getIsActive())
+            throw new BadRequestException("Supplier is inactive or null");
 
-        return poRepository.save(po);
-    }
+        if (po.getCategory() == null || !po.getCategory().getActive())
+            throw new BadRequestException("Category is inactive or null");
 
-    @Override
-    public void deletePurchaseOrder(Long id) {
-        PurchaseOrder po = poRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("PurchaseOrder not found with id " + id));
-        poRepository.delete(po);
+        return purchaseOrderRepository.save(po);
     }
 
     @Override
     public List<PurchaseOrder> getPurchaseOrdersBySupplier(Long supplierId) {
-        return poRepository.findBySupplier_Id(supplierId);
+        return purchaseOrderRepository.findBySupplier_Id(supplierId);
+    }
+
+    @Override
+    public List<PurchaseOrder> getAllPurchaseOrders() {
+        return purchaseOrderRepository.findAll();
     }
 }

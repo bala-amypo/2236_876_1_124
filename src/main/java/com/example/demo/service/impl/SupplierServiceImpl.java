@@ -1,12 +1,10 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.Supplier;
-import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.SupplierRepository;
 import com.example.demo.service.SupplierService;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
@@ -20,9 +18,7 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Override
     public Supplier createSupplier(Supplier supplier) {
-        if (supplierRepository.existsByEmail(supplier.getEmail())) {
-            throw new BadRequestException("Email already exists");
-        }
+        supplier.prePersist();
         return supplierRepository.save(supplier);
     }
 
@@ -39,8 +35,8 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Override
     public void deactivateSupplier(Long id) {
-        Supplier supplier = getSupplierById(id);
-        supplier.setIsActive(false);
-        supplierRepository.save(supplier);
+        Supplier s = getSupplierById(id);
+        s.setIsActive(false);
+        supplierRepository.save(s);
     }
 }
