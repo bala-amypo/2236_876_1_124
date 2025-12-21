@@ -4,51 +4,36 @@ import com.example.demo.entity.Supplier;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.SupplierRepository;
 import com.example.demo.service.SupplierService;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 
-@Service
 public class SupplierServiceImpl implements SupplierService {
 
-    private final SupplierRepository supplierRepository;
+    private final SupplierRepository repository;
 
-    public SupplierServiceImpl(SupplierRepository supplierRepository) {
-        this.supplierRepository = supplierRepository;
+    public SupplierServiceImpl(SupplierRepository repository) {
+        this.repository = repository;
     }
 
     @Override
     public Supplier createSupplier(Supplier supplier) {
-        return supplierRepository.save(supplier);
-    }
-
-    @Override
-    public Supplier updateSupplier(Long id, Supplier supplier) {
-        Supplier existing = supplierRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Supplier not found with id: " + id));
-
-        existing.setName(supplier.getName());
-        existing.setEmail(supplier.getEmail());
-        existing.setDiversityClassifications(supplier.getDiversityClassifications());
-
-        return supplierRepository.save(existing);
-    }
-
-    @Override
-    public void deleteSupplier(Long id) {
-        Supplier existing = supplierRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Supplier not found with id: " + id));
-        supplierRepository.delete(existing);
+        return repository.save(supplier);
     }
 
     @Override
     public Supplier getSupplierById(Long id) {
-        return supplierRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Supplier not found with id: " + id));
+        return repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Supplier not found"));
     }
 
     @Override
     public List<Supplier> getAllSuppliers() {
-        return supplierRepository.findAll();
+        return repository.findAll();
+    }
+
+    @Override
+    public void deactivateSupplier(Long id) {
+        Supplier s = getSupplierById(id);
+        s.setIsActive(false);
+        repository.save(s);
     }
 }
