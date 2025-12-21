@@ -1,7 +1,6 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -12,35 +11,42 @@ public class PurchaseOrder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String poNumber;
-    private BigDecimal amount;
-    private LocalDate dateIssued;
-    private String notes;
+    private String orderNumber;
 
-    @ManyToOne
-    private Supplier supplier;
+    private String supplier;
 
-    @ManyToOne
-    private SpendCategory category;
+    private LocalDate orderDate;
 
+    private Double totalAmount;
+
+    // Constructors
+    public PurchaseOrder() {}
+
+    public PurchaseOrder(String orderNumber, String supplier, LocalDate orderDate, Double totalAmount) {
+        this.orderNumber = orderNumber;
+        this.supplier = supplier;
+        this.orderDate = orderDate;
+        this.totalAmount = totalAmount;
+    }
+
+    // Getters and Setters
     public Long getId() { return id; }
+
     public void setId(Long id) { this.id = id; }
 
-    public BigDecimal getAmount() { return amount; }
-    public void setAmount(BigDecimal amount) { this.amount = amount; }
+    public String getOrderNumber() { return orderNumber; }
 
-    public LocalDate getDateIssued() { return dateIssued; }
-    public void setDateIssued(LocalDate dateIssued) { this.dateIssued = dateIssued; }
+    public void setOrderNumber(String orderNumber) { this.orderNumber = orderNumber; }
 
-    public Supplier getSupplier() { return supplier; }
-    public void setSupplier(Supplier supplier) { this.supplier = supplier; }
+    public String getSupplier() { return supplier; }
 
-    public SpendCategory getCategory() { return category; }
-    public void setCategory(SpendCategory category) { this.category = category; }
+    public void setSupplier(String supplier) { this.supplier = supplier; }
 
-    public String getPoNumber() { return poNumber; }
-    public void setPoNumber(String poNumber) { this.poNumber = poNumber; }
+    public LocalDate getOrderDate() { return orderDate; }
 
-    public String getNotes() { return notes; }
-    public void setNotes(String notes) { this.notes = notes; }
+    public void setOrderDate(LocalDate orderDate) { this.orderDate = orderDate; }
+
+    public Double getTotalAmount() { return totalAmount; }
+
+    public void setTotalAmount(Double totalAmount) { this.totalAmount = totalAmount; }
 }
