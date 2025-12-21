@@ -10,42 +10,43 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    // Secret key (in real apps, use environment variable!)
-    private final String SECRET_KEY = "mySecretKey12345";
-
-    // Token validity (e.g., 1 hour)
+    private final String SECRET_KEY = "supplier-diversity-secret-key-1234567890";
     private final long EXPIRATION_TIME = 14L * 24 * 60 * 60 * 1000; // 2 weeks
 
-
-    // Generate JWT token for a given username/email
-    public String generateToken(String username) {
+    // Generate token with userId, email, role
+    public String generateToken(Long userId, String email, String role) {
         return Jwts.builder()
-                .setSubject(username)
+                .claim("userId", userId)
+                .claim("role", role)
+                .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
 
-    // Extract username/email from token
-    public String getUsernameFromToken(String token) {
-        return getClaimsFromToken(token).getSubject();
+    public String extractEmail(String token) {
+        return getClaims(token).getSubject();
     }
 
-    // Validate token (check expiration and username)
-    public boolean validateToken(String token, String username) {
-        String tokenUsername = getUsernameFromToken(token);
-        return (tokenUsername.equals(username) && !isTokenExpired(token));
+    public String extractRole(String token) {
+        return getClaims(token).get("role", String.class);
     }
 
-    // Check if token is expired
-    private boolean isTokenExpired(String token) {
-        Date expiration = getClaimsFromToken(token).getExpiration();
-        return expiration.before(new Date());
+    public Long extractUserId(String token) {
+        return getClaims(token).get("userId", Long.class);
     }
 
-    // Helper method to get all claims from token
-    private Claims getClaimsFromToken(String token) {
+    public boolean validateToken(String token) {
+        try {
+            Claims claims = getClaims(token);
+            return !claims.getExpiration().before(new Date());
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private Claims getClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(SECRET_KEY)
                 .parseClaimsJws(token)
