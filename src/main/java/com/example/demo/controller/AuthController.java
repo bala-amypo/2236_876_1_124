@@ -21,7 +21,6 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    // ✅ CONSTRUCTOR MATCHES TEST FILE
     public AuthController(AuthenticationManager authenticationManager,
                           JwtUtil jwtUtil,
                           UserAccountService userAccountService) {
