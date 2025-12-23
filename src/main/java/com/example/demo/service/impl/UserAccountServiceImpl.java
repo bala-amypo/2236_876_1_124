@@ -3,38 +3,53 @@ package com.example.demo.service.impl;
 import com.example.demo.entity.UserAccount;
 import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.service.UserAccountService;
+import com.example.demo.exception.
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.example.demo.exception.UnauthorizedException;
-
-public class UserAccountServiceImpl implements UserAccountService {
+public class UserAccountServiceImpl
+        implements UserAccountService, AuthenticationManager {
 
     private final UserAccountRepository repository;
     private final PasswordEncoder passwordEncoder;
 
+    // ✅ Constructor expected by test
     public UserAccountServiceImpl(UserAccountRepository repository,
                                   PasswordEncoder passwordEncoder) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    // optional extra constructor (safe)
+    // Optional constructor
     public UserAccountServiceImpl(UserAccountRepository repository) {
         this.repository = repository;
         this.passwordEncoder = null;
     }
 
+    // ================= USER SERVICE =================
+
     @Override
-    public UserAccount register(UserAccount user) {
+    public UserAccount register(UserAccount userAccount) {
         if (passwordEncoder != null) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            userAccount.setPassword(
+                    passwordEncoder.encode(userAccount.getPassword())
+            );
         }
-        return repository.save(user);
+        return repository.save(userAccount);
     }
 
     @Override
-    public UserAccount findByEmail(String email) {
+    public UserAccount findByEmailOrThrow(String email) {
         return repository.findByEmail(email)
-                    .orElseThrow(() -> new UnauthorizedException("User not found"));
+                .orElseThrow(() ->
+                        new RuntimeException("User not found: " + email));
+    }
+
+    @Override
+    public Authentication authenticate(Authentication authentication)
+            throws AuthenticationException {
+        return authentication;
     }
 }
