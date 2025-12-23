@@ -25,7 +25,11 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     public Supplier getSupplierById(Long id) {
         return supplierRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Supplier not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Supplier not found with id: " + id
+                        )
+                );
     }
 
     @Override
