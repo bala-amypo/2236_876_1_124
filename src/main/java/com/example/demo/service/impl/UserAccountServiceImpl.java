@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class UserAccountServiceImpl
@@ -16,7 +17,6 @@ public class UserAccountServiceImpl
     private final UserAccountRepository repository;
     private final PasswordEncoder passwordEncoder;
 
-    // ✅ Constructor expected by test
     public UserAccountServiceImpl(UserAccountRepository repository,
                                   PasswordEncoder passwordEncoder) {
         this.repository = repository;
