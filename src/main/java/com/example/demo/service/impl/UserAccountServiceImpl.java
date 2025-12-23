@@ -5,12 +5,13 @@ import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.service.UserAccountService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.example.demo.exception.UnauthorizedException;
+
 public class UserAccountServiceImpl implements UserAccountService {
 
     private final UserAccountRepository repository;
     private final PasswordEncoder passwordEncoder;
 
-    // ✅ constructor REQUIRED by test
     public UserAccountServiceImpl(UserAccountRepository repository,
                                   PasswordEncoder passwordEncoder) {
         this.repository = repository;
