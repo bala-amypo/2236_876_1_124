@@ -24,9 +24,9 @@ public class AuthController {
     public AuthController(AuthenticationManager authenticationManager,
                           JwtUtil jwtUtil,
                           UserAccountService userAccountService) {
+        this.userAccountService = userAccountService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
-        this.userAccountService = userAccountService;
     }
 
     @PostMapping("/register")
