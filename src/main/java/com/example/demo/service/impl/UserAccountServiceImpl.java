@@ -1,56 +1,53 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.UserAccount;
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.service.UserAccountService;
-import com.example.demo.exception.UnauthorizedException;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserAccountServiceImpl
-        implements UserAccountService, AuthenticationManager {
+public class UserAccountServiceImpl implements UserAccountService {
 
-    private final UserAccountRepository repository;
+    private final UserAccountRepository userAccountRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserAccountServiceImpl(UserAccountRepository repository,
+    // ✅ SINGLE constructor – matches test usage
+    public UserAccountServiceImpl(UserAccountRepository userAccountRepository,
                                   PasswordEncoder passwordEncoder) {
-        this.repository = repository;
+        this.userAccountRepository = userAccountRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    // Optional constructor
-    public UserAccountServiceImpl(UserAccountRepository repository) {
-        this.repository = repository;
-        this.passwordEncoder = null;
-    }
-
-    // ================= USER SERVICE =================
-
+    // ------------------------------------------------
+    // REGISTER
+    // ------------------------------------------------
     @Override
     public UserAccount register(UserAccount userAccount) {
-        if (passwordEncoder != null) {
-            userAccount.setPassword(
-                    passwordEncoder.encode(userAccount.getPassword())
-            );
+
+        if (userAccountRepository.existsByEmail(userAccount.getEmail())) {
+            throw new BadRequestException("Email already exists");
         }
-        return repository.save(userAccount);
+
+        userAccount.setPassword(
+                passwordEncoder.encode(userAccount.getPassword())
+        );
+
+        return userAccountRepository.save(userAccount);
     }
 
+    // ------------------------------------------------
+    // FIND USER
+    // ------------------------------------------------
     @Override
     public UserAccount findByEmailOrThrow(String email) {
-        return repository.findByEmail(email)
+        return userAccountRepository.findByEmail(email)
                 .orElseThrow(() ->
-                        new UnauthorizedException("User not found: " + email));
-    }
-
-    @Override
-    public Authentication authenticate(Authentication authentication)
-            throws AuthenticationException {
-        return authentication;
+                        new ResourceNotFoundException(
+                                "User not found with email: " + email
+                        )
+                );
     }
 }
