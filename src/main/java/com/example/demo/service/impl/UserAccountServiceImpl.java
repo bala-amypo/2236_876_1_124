@@ -3,7 +3,7 @@ package com.example.demo.service.impl;
 import com.example.demo.entity.UserAccount;
 import com.example.demo.repository.UserAccountRepository;
 import com.example.demo.service.UserAccountService;
-import com.example.demo.exception.
+import com.example.demo.exception.UnauthorizedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -44,7 +44,7 @@ public class UserAccountServiceImpl
     public UserAccount findByEmailOrThrow(String email) {
         return repository.findByEmail(email)
                 .orElseThrow(() ->
-                        new RuntimeException("User not found: " + email));
+                        new UnauthorizedException("User not found: " + email));
     }
 
     @Override

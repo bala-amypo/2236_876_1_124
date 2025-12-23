@@ -63,7 +63,7 @@ public class AuthController {
             throw new UnauthorizedException("Invalid credentials");
         }
 
-        UserAccount user = userAccountService.findByEmail(req.getEmail());
+        UserAccount user = userAccountService.findByEmailOrThrow(req.getEmail());
 
         String token = jwtUtil.generateToken(
                 user.getId(),
