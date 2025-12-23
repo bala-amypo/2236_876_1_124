@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+@Service
 public class UserAccountServiceImpl
         implements UserAccountService, AuthenticationManager {
 
