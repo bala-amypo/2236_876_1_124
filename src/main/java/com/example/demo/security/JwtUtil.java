@@ -20,19 +20,19 @@ public class JwtUtil {
     private final Key signingKey;
     private final long expirationTime;
 
-    
+    // ✅ REQUIRED BY YOUR TEST (byte[], long)
     public JwtUtil(byte[] secret, long expirationTime) {
         this.signingKey = Keys.hmacShaKeyFor(secret);
         this.expirationTime = expirationTime;
     }
 
-    
+    // ✅ REQUIRED BY SPRING (@Component)
     public JwtUtil() {
         this.signingKey = Keys.hmacShaKeyFor(DEFAULT_SECRET.getBytes());
         this.expirationTime = DEFAULT_EXPIRATION;
     }
 
-    
+    // ================= TOKEN GENERATION =================
 
     public String generateToken(Long userId, String email, String role) {
         return Jwts.builder()
@@ -47,7 +47,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    
+    // ================= TOKEN EXTRACTION =================
 
     public String extractEmail(String token) {
         return extractAllClaims(token).getSubject();
@@ -61,7 +61,7 @@ public class JwtUtil {
         return extractAllClaims(token).get("role", String.class);
     }
 
-    
+    // ================= VALIDATION =================
 
     public boolean validateToken(String token) {
         try {
@@ -72,7 +72,7 @@ public class JwtUtil {
         }
     }
 
-    
+    // ================= INTERNAL =================
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
