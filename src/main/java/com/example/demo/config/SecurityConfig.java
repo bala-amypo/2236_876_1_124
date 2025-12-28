@@ -13,26 +13,27 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class SecurityConfig {
 
     
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+            public PasswordEncoder passwordEncoder() {
+                    return new BCryptPasswordEncoder();
+                        }
 
-    
-    @Bean
-    public AuthenticationManager authenticationManager() {
-        return authentication -> authentication;
-    }
+                            
+                                @Bean
+                                    public AuthenticationManager authenticationManager() {
+                                            return authentication -> authentication;
+                                                }
 
-    
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll()
-            );
+                                                    
+                                                        @Bean
+                                                            public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+                                                                    http
+                                                                                .csrf(csrf -> csrf.disable())
+                                                                                            .authorizeHttpRequests(auth -> auth
+                                                                                                            .anyRequest().permitAll()
+                                                                                                                        );
 
-        return http.build();
-    }
-}
+                                                                                                                                return http.build();
+                                                                                                                                    }
+                                                                                                                                    }
+                                                                                                                                    
