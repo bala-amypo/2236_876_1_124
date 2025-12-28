@@ -57,7 +57,7 @@ public class SwaggerConfig {
                 .servers(List.of(
                         new Server().url("https://9126.32procr.amypo.ai/")
                 ))
-                // 🔐 Enable Authorize button
+                
                 .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
                 .components(
                         new Components()
