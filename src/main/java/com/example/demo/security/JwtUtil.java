@@ -72,7 +72,7 @@ public class JwtUtil {
         }
     }
 
-    // ================= INTERNAL =================
+    
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
