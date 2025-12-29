@@ -23,8 +23,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        // 🔓 SECURITY DISABLED FOR TESTS
-        // Token parsing intentionally skipped
+        
 
         filterChain.doFilter(request, response);
     }
