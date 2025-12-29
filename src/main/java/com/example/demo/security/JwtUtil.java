@@ -11,7 +11,7 @@ import java.util.Map;
 @Component
 public class JwtUtil {
 
-    // ⚠️ Demo secret — OK for assignment/testing
+    
     private static final String DEFAULT_SECRET =
             "demo-secret-key-demo-secret-key-demo-secret-key";
 
