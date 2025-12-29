@@ -20,13 +20,13 @@ public class JwtUtil {
     private final Key signingKey;
     private final long expirationTime;
 
-    // ✅ REQUIRED BY YOUR TEST (byte[], long)
+    
     public JwtUtil(byte[] secret, long expirationTime) {
         this.signingKey = Keys.hmacShaKeyFor(secret);
         this.expirationTime = expirationTime;
     }
 
-    // ✅ REQUIRED BY SPRING (@Component)
+    
     public JwtUtil() {
         this.signingKey = Keys.hmacShaKeyFor(DEFAULT_SECRET.getBytes());
         this.expirationTime = DEFAULT_EXPIRATION;
